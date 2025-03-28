@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const path = require('path');
 
 dotenv.config();
-const JWT_SECRET = "Sawari Booking platform"; // Ensure it matches your token secret
+const JWT_SECRET = process.env.JWT_SECRET;
 
 module.exports = function (req, res, next) {
   const token = req.header("Authorization");

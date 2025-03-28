@@ -3,6 +3,7 @@ const config = require('./models/config');
 const cors = require("cors");
 require("dotenv").config();
 const path = require("path");
+const process = require('process');
 
 config();
 const app = express()
@@ -34,9 +35,10 @@ app.use("/api/place", placeRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/admin", adminRoutes);
 
+const PORT = process.env.PORT ||5000;
 app.get('/',(req,res)=>{
     res.send("Server is running on the port 5000")
-}).listen(5000,()=>{
+}).listen(PORT,()=>{
     console.log("Booking platform is ready to listen on port 5000")
 });
 

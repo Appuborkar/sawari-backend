@@ -11,7 +11,7 @@ const dotenv = require('dotenv');
 const authMiddleware = require("../middleware/authMiddleware");
 dotenv.config();
 
-const JWT_SECRET = "Sawari Booking platform";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Set up multer for file uploads
 const storage = multer.diskStorage({
