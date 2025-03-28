@@ -9,7 +9,7 @@ config();
 const app = express()
 // CORS Configuration
 const corsOptions = {
-    origin: ["https://sawari-frontend-qshlgrmab-apurvborkar56-gmailcoms-projects.vercel.app"], // Allow only the frontend URL
+    origin: ["https://sawari-frontend.vercel.app"],
     credentials: true,
 };
 
