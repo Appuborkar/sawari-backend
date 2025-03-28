@@ -9,8 +9,6 @@ const path = require('path');
 const process = require('process');
 const dotenv = require('dotenv');
 const authMiddleware = require("../middleware/authMiddleware");
-
-
 dotenv.config();
 
 const JWT_SECRET = "Sawari Booking platform";
@@ -63,8 +61,7 @@ router.post(
                 return res.status(400).json({ msg: 'User with this email already exists' });
             }
 
-            
-
+          
             const salt = await bcrypt.genSalt(10);
             const secPassword = await bcrypt.hash(req.body.password, salt);
 
@@ -104,14 +101,9 @@ router.post(
     ],
     
     async (req, res) => {
-  
-  
       if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).json({ success: false, error: "Empty request body received. Ensure JSON is sent properly." });
       }
-  
-      
-
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         console.log("Validation errors:", errors.array());
@@ -130,9 +122,11 @@ router.post(
         }
   
         const data = { user: { id: user.id, name: user.name } };
+        
         const authToken = jwt.sign(data, JWT_SECRET);
-  
+        
         res.json({ success: true, authToken, userId: user.id });
+        
       } catch (error) {
         console.error("Login Error:", error.message);
         res.status(500).json({ success: false, error: "Internal Server Error" });
@@ -140,19 +134,18 @@ router.post(
     }
   );
   
-// User Profile 
+//Fetch the user for sign in
 router.get("/user", authMiddleware, async (req, res) => {
     try {
       const user = await User.findById(req.user.id).select("-password"); // Exclude password
       if (!user) return res.status(404).json({ error: "User not found" });
 
-      // ✅ Append base URL for profile images
-      const baseUrl = "http://localhost:5000/"; // Change if using deployment URL
+      // Append base URL for profile images
+      const baseUrl = "http://localhost:5000";
       const userProfile = {
         ...user._doc, 
         photo: user.photo ? `${baseUrl}${user.photo}` : null
       };
-
       res.json({ success: true, user: userProfile });
     } catch (error) {
       console.error("Error fetching user profile:", error);
@@ -160,11 +153,52 @@ router.get("/user", authMiddleware, async (req, res) => {
     }
 });
 
+  // Fetch User Profile Route
+  router.get('/profile', authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select("-password");
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
   
+        const baseUrl = "http://localhost:5000/"; // Ensure this matches your server URL
+        res.json({
+            ...user._doc, 
+            photo: user.photo ? `${baseUrl}${user.photo}` : null, // Full URL for image
+        });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Internal Server Error');
+    }
+  });
   
-  
-  
+// Update Profile Route
+router.put("/update-profile", authMiddleware, upload.single("photo"), async (req, res) => {
+  try {
+      const { name, email, mobile } = req.body;
+      const updatedData = { name, email, mobile};
 
+      if (req.file) {
+        console.log("Uploaded file:", req.file);
+        const filePath = `Profile/${req.file.filename}`.replace(/\\/g, "/"); 
+          updatedData.photo = filePath; 
+      }
 
+      const updatedUser = await User.findByIdAndUpdate(req.user.id, updatedData, { new: true }).select("-password");
+
+      if (!updatedUser) {
+          return res.status(404).json({ message: "User not found" });
+      }
+
+      const baseUrl = "http://localhost:5000/";
+      res.json({
+          ...updatedUser._doc,
+          photo: updatedUser.photo ? `${baseUrl}${updatedUser.photo}` : null, 
+      });
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error updating profile" });
+  }
+});
 
 module.exports = router;
