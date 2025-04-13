@@ -11,7 +11,7 @@ const app = express()
 
 
 app.use(cors({
-    origin: "https://sawari-frontend.vercel.app", // exact allowed origin
+    origin: "http://localhost:3000", // exact allowed origin
     credentials: true
   }));
 
