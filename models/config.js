@@ -2,7 +2,7 @@ const mongoose=require('mongoose');
 const process = require('process');
 const dotenv = require('dotenv')
 dotenv.config();
-const mongoURI = process.env.mongoURI;
+const mongoURI ="mongodb://localhost:27017/Bus-book";
 
 
 const connectToMongo=async()=>{

@@ -8,15 +8,15 @@ const process = require('process');
 config();
 const app = express()
 // CORS Configuration
-const corsOptions = {
-    origin: ["https://sawari-frontend.vercel.app"],
-    credentials: true,
-};
 
-app.use(cors(corsOptions));
+
+app.use(cors({
+    origin: "http://localhost:3000", // exact allowed origin
+    credentials: true
+  }));
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
 
 
 app.use('/Profile', express.static(path.join(__dirname, 'Profile')));
